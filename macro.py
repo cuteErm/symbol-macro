@@ -28,6 +28,10 @@ SendInput = ctypes.windll.user32.SendInput
 # F-Taste = VK_F (0x46)
 VK_F = 0x46
 
+# Flags
+KEYEVENTF_KEYDOWN = 0x0000
+KEYEVENTF_KEYUP = 0x0002
+
 class KEYBDINPUT(ctypes.Structure):
     _fields_ = [("wVk", ctypes.c_ushort),
                 ("wScan", ctypes.c_ushort),
@@ -42,13 +46,13 @@ class INPUT(ctypes.Structure):
 def press_key(vk):
     """Taste drücken"""
     x = INPUT(type=1)
-    x.ki = KEYBDINPUT(wVk=vk, wScan=0, dwFlags=0, time=0, dwExtraInfo=None)
+    x.ki = KEYBDINPUT(wVk=vk, wScan=0, dwFlags=KEYEVENTF_KEYDOWN, time=0, dwExtraInfo=None)
     SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 def release_key(vk):
     """Taste loslassen"""
     x = INPUT(type=1)
-    x.ki = KEYBDINPUT(wVk=vk, wScan=0, dwFlags=2, time=0, dwExtraInfo=None)
+    x.ki = KEYBDINPUT(wVk=vk, wScan=0, dwFlags=KEYEVENTF_KEYUP, time=0, dwExtraInfo=None)
     SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 def press_and_hold_key(vk, hold_time):
@@ -105,7 +109,7 @@ while True:
                 delay = random.uniform(MIN_DELAY, MAX_DELAY)
                 time.sleep(delay)
                 
-                # Nutze Windows API statt pyautogui
+                # Nutze Windows API mit korrekten Flags
                 press_and_hold_key(VK_F, KEY_HOLD_TIME)
                 print(f"F gedrückt nach {delay:.2f}s (Windows API)")
 
