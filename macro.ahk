@@ -1,37 +1,45 @@
-# AutoHotkey v2
-# F10 = Start/Stop
-# Python erkennt das Bild und gibt FOUND/NOT_FOUND zurück
-# Wenn FOUND, drückt AutoHotkey F11
+; AutoHotkey v1
+; F10 = Start/Stop
+; Python erkennt das Bild und gibt FOUND/NOT_FOUND zurück
+; Wenn FOUND, drückt AutoHotkey F11
 
 Toggle := false
 
-F10:: {
+F10::
+{
     global Toggle
     Toggle := !Toggle
-    if (Toggle) {
-        ToolTip("START")
-    } else {
-        ToolTip("STOP")
+    if (Toggle)
+    {
+        ToolTip, START
     }
-    SetTimer(Check, 50)
+    else
+    {
+        ToolTip, STOP
+    }
+    SetTimer, Check, 50
+    return
 }
 
-Check() {
+Check:
+{
     global Toggle
     if (!Toggle)
         return
 
     result := RunPythonCheck()
-    if (result = "FOUND") {
-        Send "{F11}"
-        Sleep 250
+    if (result = "FOUND")
+    {
+        Send, {F11}
+        Sleep, 250
     }
+    return
 }
 
-RunPythonCheck() {
-    command := "python check_image.py"
+RunPythonCheck()
+{
     shell := ComObjCreate("WScript.Shell")
-    exec := shell.Exec(A_ComSpec " /C " command)
+    exec := shell.Exec(ComSpec " /C python check_image.py")
     output := exec.StdOut.ReadAll()
     return Trim(output)
 }
